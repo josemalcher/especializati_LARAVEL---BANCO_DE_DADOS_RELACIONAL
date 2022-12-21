@@ -1,5 +1,9 @@
 <?php
 
+use App\Models\{
+    User,
+    Preference
+};
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,4 +19,39 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::get('/one-to-one', function () {
+
+    // $user = User::first();
+    // $user = User::find(2);
+    $user = User::with('preference')->find(2); // melhor forma
+
+
+    // dd($user->preference);
+    // dd($user->preference()->get());
+    // dd($user->preference()->first());
+
+    $data = [
+        'background_color' => '#000'
+    ];
+
+    if ($user->preference) {
+        $user->preference()->update($data);
+    }else{
+        // $user->preference()->create($data);
+        $preference = new Preference($data);
+        $user->preference()->save($preference);
+
+    }
+
+    $user->refresh();
+
+    var_dump($user->preference);
+
+    $user->preference->delete();
+    $user->refresh();
+
+    dd($user->preference);
+
 });
