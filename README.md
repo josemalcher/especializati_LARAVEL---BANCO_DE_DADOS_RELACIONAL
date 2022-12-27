@@ -82,9 +82,9 @@ https://academy.especializati.com.br/curso/laravel-banco-de-dados-relacional
 ```
 $ php artisan make:model Preference -m
 
-   INFO  Model [\especializati_LARAVEL---BANCO_DE_DADOS_RELACIONAL\dbrelacional1\app/Models/Preference.php] created successfully.
+   INFO  Model [\dbrelacional1\app/Models/Preference.php] created successfully.
 
-   INFO  Migration [\especializati_LARAVEL---BANCO_DE_DADOS_RELACIONAL\dbrelacional1\database\migrations/2022_12_21_174839_create_preferences_table.php] created successfully.
+   INFO  Migration [\dbrelacional1\database\migrations/2022_12_21_174839_create_preferences_table.php] created successfully.
 
 
 ```
@@ -186,6 +186,146 @@ Route::get('/one-to-one', function () {
 
 ## <a name="parte8">8 - 06 - Laravel Relacionamento One to Many (e inverso)</a>
 
+```
+$ php artisan make:model Course -m
+
+   INFO  Model [\dbrelacional1\app/Models/Course.php] created successfully.
+
+   INFO  Migration [\dbrelacional1\database\migrations/2022_12_27_183501_create_courses_table.php] created successfully.
+
+$ php artisan make:model Module -m
+
+   INFO  Model [\dbrelacional1\app/Models/Module.php] created successfully.
+
+   INFO  Migration [\dbrelacional1\database\migrations/2022_12_27_183607_create_modules_table.php] created successfully.
+
+$ php artisan make:model Lesson -m
+
+   INFO  Model [\dbrelacional1\app/Models/Lesson.php] created successfully.
+
+   INFO  Migration [\dbrelacional1\database\migrations/2022_12_27_183634_create_lessons_table.php] created successfully.
+
+```
+
+```php
+    public function up()
+    {
+        Schema::create('courses', function (Blueprint $table) {
+            $table->id();
+
+            $table->string('name');
+            $table->boolean('available')->default(true);
+
+            $table->timestamps();
+        });
+    }
+```
+
+```php
+    public function up()
+    {
+        Schema::create('modules', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('course_id')->constrained('courses');
+            $table->string('name');
+
+            $table->timestamps();
+        });
+    }
+```
+
+```php
+    public function up()
+    {
+        Schema::create('lessons', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('module_id')->constrained('modules');
+            $table->string('name');
+            $table->string('video');
+
+            $table->timestamps();
+        });
+    }
+```
+
+```
+$ php artisan migrate
+
+   INFO  Running migrations.
+
+  2022_12_27_183501_create_courses_table ........ 24ms DONE
+  2022_12_27_183607_create_modules_table ........ 49ms DONE
+  2022_12_27_183634_create_lessons_table ........ 43ms DONE
+
+```
+
+```php
+class Course extends Model
+{
+    use HasFactory;
+    protected $fillable = ['name', 'available'];
+    public function modules()
+    {
+        return $this->hasMany(Module::class);
+    }
+```
+
+```php
+class Lesson extends Model
+{
+    use HasFactory;
+    protected $fillable = ['name', 'video'];
+    public function module()
+    {
+        return $this->belongsTo(Module::class);
+    }
+```
+
+```php
+class Module extends Model
+{
+    use HasFactory;
+    protected $fillable = ['name'];
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
+    }
+    public function lessons()
+    {
+        return $this->hasMany(Lesson::class);
+    }
+```
+
+```php
+Route::get('/one-to-many',
+    function () {
+        // $course = Course::create(['name' => 'Curso de Laravel']);
+        // $course = Course::first();
+        $course = Course::with('modules.lessons')->first();
+
+        // dd($course);
+
+        echo $course->name;
+        echo "<br>";
+        foreach ($course->modules as $module) {
+            echo "Módulo: {$module->name} <br>";
+            foreach ($module->lessons as $lesson) {
+                echo "AULA: {$lesson->name} <br>";
+            }
+        }
+
+        $data = [
+            'name' => 'Módulo x2'
+        ];
+        // $course->modules()->create($data);
+
+        // $course->modules()->get();
+        // $modules = $course->modules;
+        // dd($modules);
+    });
+```
 
 
 [Voltar ao Índice](#indice)
