@@ -405,7 +405,37 @@ Route::get('/many-to-many',
 
 ## <a name="parte10">10 - 08 - Laravel Relacionamentos Many to Many - Pivô</a>
 
+```php
+class User extends Authenticatable
+{
+    public function permissions()
+    {
+        // return $this->belongsToMany(Permission::class);
+        return $this->belongsToMany(Permission::class)
+            ->withPivot(['active', 'created_at']);
+    }
+```
 
+```php
+Route::get('/many-to-many-pivot',
+    function () {
+        $user = User::with('permissions')->find(1);
+
+//        $user->permissions()->attach([
+//            1 => ['active' => false],
+//            3 => ['active' => false]
+//        ]);
+
+        echo "<b>{$user->name}</b><br>";
+        foreach ($user->permissions as $permission) {
+            echo "{$permission->name} - {$permission->pivot->active}<br>";
+        }
+
+        $user->refresh();
+        // dd($user->permissions);
+    }
+);
+```
 
 [Voltar ao Índice](#indice)
 
