@@ -21,4 +21,10 @@ class Course extends Model
         return $this->morphMany(Coment::class, 'comentable');
     }
 
+
+    public function tags()
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
+    }
+
 }

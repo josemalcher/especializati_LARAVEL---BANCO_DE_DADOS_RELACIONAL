@@ -596,6 +596,86 @@ Route::get('one-to-many-polymorphic',
 
 ## <a name="parte14">14 - 11 - Laravel Relacionamento Polimórfico - Many to Many</a>
 
+```
+$ php artisan make:model Tag -m
+
+```
+
+```php
+    public function up()
+    {
+        Schema::create('tags', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->unique();
+            $table->string('color');
+            $table->timestamps();
+        });
+
+        Schema::create('taggables', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('tag_id')->constrained('tags');
+            $table->morphs('taggable');
+            $table->timestamps();
+        });
+    }
+```
+
+```php
+class Tag extends Model
+{
+    use HasFactory;
+    protected $fillable = ['name', 'color'];
+
+    public function users()
+    {
+        return $this->morphedByMany(User::class, 'taggable');
+    }
+
+    public function courses()
+    {
+        return $this->morphedByMany(Course::class, 'taggable');
+    }
+}
+```
+
+```php
+class User extends Authenticatable
+{
+    public function tags()
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
+    }
+```
+
+```php
+class Course extends Model
+{
+    public function tags()
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
+    }
+```
+
+```php
+Route::get('many-to-many-polymorphic',
+    function () {
+        // $user = User::first();
+
+//        Tag::create(['name'=> 'tag1', 'color' => 'blue']);
+//        Tag::create(['name'=> 'tag2', 'color' => 'red']);
+//        Tag::create(['name'=> 'tag3', 'color' => 'green']);
+
+        // $user->tags()->attach(2);
+        // dd($user->tags);
+
+//        $course = Course::first();
+//        $course->tags()->attach(2);
+//        dd($course->tags);
+        $tag = Tag::where('name', 'tag2')->first();
+        dd($tag->users);
+    });
+
+```
 
 
 [Voltar ao Índice](#indice)

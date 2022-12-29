@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\{Coment, Course, Image, Permission, User, Preference};
+use App\Models\{Coment, Course, Image, Permission, Tag, User, Preference};
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -156,4 +156,22 @@ Route::get('one-to-many-polymorphic',
         */
         $comentable = Coment::find(1);
         dd($comentable->comentable);
+    });
+
+Route::get('many-to-many-polymorphic',
+    function () {
+        // $user = User::first();
+
+//        Tag::create(['name'=> 'tag1', 'color' => 'blue']);
+//        Tag::create(['name'=> 'tag2', 'color' => 'red']);
+//        Tag::create(['name'=> 'tag3', 'color' => 'green']);
+
+        // $user->tags()->attach(2);
+        // dd($user->tags);
+
+//        $course = Course::first();
+//        $course->tags()->attach(2);
+//        dd($course->tags);
+        $tag = Tag::where('name', 'tag2')->first();
+        dd($tag->users);
     });
