@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\{Course, Permission, User, Preference};
+use App\Models\{Course, Image, Permission, User, Preference};
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -35,7 +35,7 @@ Route::get('/one-to-one', function () {
 
     if ($user->preference) {
         $user->preference()->update($data);
-    }else{
+    } else {
         // $user->preference()->create($data);
         $preference = new Preference($data);
         $user->preference()->save($preference);
@@ -98,7 +98,7 @@ Route::get('/many-to-many',
 
         // $user->permissions()->attach([3,6]);
 
-        $user->permissions()->detach([3,6]);
+        $user->permissions()->detach([3, 6]);
 
         $user->refresh();
 
@@ -122,5 +122,23 @@ Route::get('/many-to-many-pivot',
 
         $user->refresh();
         // dd($user->permissions);
+    }
+);
+
+Route::get('/one-to-one-polymorphc',
+    function () {
+        $user = User::find(3);
+
+        $data = [
+            'path' => 'path/nome-do-arquivo3.png'
+        ];
+        if ($user->image) {
+            $user->image()->update($data);
+        }else{
+            //$user->image()->save(new Image($data));
+            $user->image()->create($data);
+        }
+
+        dd($user->image);
     }
 );

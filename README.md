@@ -453,7 +453,66 @@ Route::get('/many-to-many-pivot',
 
 ## <a name="parte12">12 - 09 - Laravel Relacionamento Polimórfico - One to One</a>
 
+```
+$ php artisan make:model Image -m
 
+```
+
+```php
+    public function up()
+    {
+        Schema::create('images', function (Blueprint $table) {
+            $table->id();
+
+            $table->string('path');
+            $table->morphs('imageable');
+            
+            $table->timestamps();
+        });
+    }
+```
+
+```php
+class Image extends Model
+{
+    use HasFactory;
+
+    protected $fillable = ['path'];
+
+    public function imageable()
+    {
+        return $this->morphTo('imageable');
+    }
+```
+
+```php
+class User extends Authenticatable
+{
+    public function image()
+    {
+        return $this->morphOne(Image::class, 'imageable');
+    }
+```
+
+```php
+Route::get('/one-to-one-polymorphc',
+    function () {
+        $user = User::find(3);
+
+        $data = [
+            'path' => 'path/nome-do-arquivo3.png'
+        ];
+        if ($user->image) {
+            $user->image()->update($data);
+        }else{
+            //$user->image()->save(new Image($data));
+            $user->image()->create($data);
+        }
+
+        dd($user->image);
+    }
+);
+```
 
 [Voltar ao Índice](#indice)
 

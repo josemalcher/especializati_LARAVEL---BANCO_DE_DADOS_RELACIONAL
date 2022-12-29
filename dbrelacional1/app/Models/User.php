@@ -53,4 +53,10 @@ class User extends Authenticatable
         return $this->belongsToMany(Permission::class)
             ->withPivot(['active', 'created_at']);
     }
+
+    public function image()
+    {
+        return $this->morphOne(Image::class, 'imageable');
+    }
+
 }
