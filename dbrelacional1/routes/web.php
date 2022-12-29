@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\{Course, Image, Permission, User, Preference};
+use App\Models\{Coment, Course, Image, Permission, User, Preference};
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -134,7 +134,7 @@ Route::get('/one-to-one-polymorphc',
         ];
         if ($user->image) {
             $user->image()->update($data);
-        }else{
+        } else {
             //$user->image()->save(new Image($data));
             $user->image()->create($data);
         }
@@ -142,3 +142,18 @@ Route::get('/one-to-one-polymorphc',
         dd($user->image);
     }
 );
+
+Route::get('one-to-many-polymorphic',
+    function () {
+
+        /*
+        $course = Course::first();
+        $course->coments()->create([
+            'subject' => 'Novo comentario 2',
+            'content' => 'Apenas um coment 2'
+        ]);
+        dd($course->coments);
+        */
+        $comentable = Coment::find(1);
+        dd($comentable->comentable);
+    });

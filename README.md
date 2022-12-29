@@ -521,7 +521,73 @@ Route::get('/one-to-one-polymorphc',
 
 ## <a name="parte13">13 - 10 Laravel Relacionamento Polimórfico One to Many</a>
 
+```
+$ php artisan make:model Coment -m
 
+```
+
+```php
+    public function up()
+    {
+        Schema::create('coments', function (Blueprint $table) {
+            $table->id();
+
+            $table->string('subject');
+            $table->text('content');
+
+            $table->morphs('comentable');
+
+            $table->timestamps();
+        });
+    }
+```
+
+```php
+class Coment extends Model
+{
+    use HasFactory;
+    protected $fillable = ['subject', 'content'];
+
+    public function comentable()
+    {
+        return $this->morphTo();
+    }
+```
+
+```php
+class Course extends Model
+{
+    public function coments()
+    {
+        return $this->morphMany(Coment::class, 'comentable');
+    }
+```
+
+```php
+class Lesson extends Model
+{
+    public function coments()
+    {
+        return $this->morphMany(Coment::class, 'comentable');
+    }
+```
+
+```php
+Route::get('one-to-many-polymorphic',
+    function () {
+
+        /*
+        $course = Course::first();
+        $course->coments()->create([
+            'subject' => 'Novo comentario 2',
+            'content' => 'Apenas um coment 2'
+        ]);
+        dd($course->coments);
+        */
+        $comentable = Coment::find(1);
+        dd($comentable->comentable);
+    });
+```
 
 [Voltar ao Índice](#indice)
 
