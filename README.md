@@ -335,6 +335,67 @@ Route::get('/one-to-many',
 
 ## <a name="parte9">9 - 07 - Laravel Relacionamentos Many to Many</a>
 
+```
+$ php artisan make:model Permission -m
+
+```
+
+```php
+    public function up()
+    {
+        Schema::create('permissions', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->unique();
+            $table->timestamps();
+        });
+
+        Schema::create('permission_user', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('permission_id')->constrained('permissions');
+            $table->foreignId('user_id')->constrained('users');
+            $table->boolean('active')->default(true );
+            $table->timestamps();
+        });
+    }
+```
+
+```
+$ php artisan migrate
+
+   INFO  Running migrations.
+
+  2022_12_29_135712_create_permissions_table ........ 176ms DONE
+
+```
+
+```php
+Route::get('/many-to-many',
+    function () {
+        // dd(Permission::create(['name'=> 'menu_04']));
+        $user = User::with('permissions')->find(1);
+
+        // $permission = Permission::find(1);
+        //$user->permissions()->save($permission);
+        /*
+        $user->permissions()->saveMany([
+            Permission::find(1),
+            Permission::find(3),
+            Permission::find(6)
+        ]);
+        */
+        // $user->permissions()->sync([4]);
+
+        // $user->permissions()->attach([3,6]);
+
+        $user->permissions()->detach([3,6]);
+
+        $user->refresh();
+
+        dd($user->permissions);
+
+    });
+```
 
 
 [Voltar ao Índice](#indice)
